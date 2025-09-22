@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # User model already created by django in the User class
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -19,4 +20,4 @@ class Task(models.Model):
 
     # Optional: order tasks by their due date or creation time.
     class Meta:
-        ordering = ['due_date', '-created_at']
+        ordering = ["due_date", "-created_at"]
