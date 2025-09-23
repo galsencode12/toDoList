@@ -70,6 +70,7 @@ const Register = () => {
             <p className="form-subtitle">Créez votre compte pour commencer à organiser vos tâches.</p>
 
             {error && <div className="error-message">{error}</div>}
+            }
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
