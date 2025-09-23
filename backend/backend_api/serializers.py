@@ -21,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source="user.username")
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
 
@@ -29,7 +28,6 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id",
-            "user",
             "title",
             "description",
             "is_completed",
@@ -44,12 +42,18 @@ class TaskSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class UserTaskListSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    tasks = TaskSerializer(many=True)
+
+
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField()
 
 
 class TaskFilterSerializer(serializers.Serializer):
+    search = serializers.CharField(required=False, allow_blank=True)
     state = serializers.ChoiceField(choices=["done", "active"], required=False)
     priority = serializers.ChoiceField(
         choices=["low", "medium", "high"], required=False

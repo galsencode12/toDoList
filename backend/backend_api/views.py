@@ -17,8 +17,10 @@ from .serializers import (
     UserLoginSerializer,
     TaskSerializer,
     UserSerializer,
+    UserTaskListSerializer,
 )
 from .models import Task
+from django.db.models import Q
 from django.contrib.auth.models import User
 
 
@@ -86,8 +88,12 @@ def task_list(request):
     """
     if request.method == "GET":
         tasks = Task.objects.filter(user=request.user)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+        payload = {
+            "username": request.user.username,
+            "tasks": tasks,
+        }
+        serializer = UserTaskListSerializer(payload)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "POST":
         serializer = TaskSerializer(data=request.data, context={"request": request})
@@ -126,37 +132,22 @@ def task_detail(request, pk):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def search_task(request: Request):
-    # Prendre toute les taches de l'utilisateur
+    # Pull all user's tasks
     queryset = Task.objects.filter(user=request.user)
 
-    # Valider les query parameters
+    # Validate query parameters
     filters = TaskFilterSerializer(data=request.query_params)
     filters.is_valid(raise_exception=True)
 
+    search = filters.validated_data.get("search")
     state = filters.validated_data.get("state")
     priority = filters.validated_data.get("priority")
 
-    # Map state to boolean
-    if state:
-        if state == "done":
-            queryset = queryset.filter(is_completed=True)
-        elif state == "active":
-            queryset = queryset.filter(is_completed=False)
-
-    # Map priority to number
-    if priority:
-        mapping = {"low": 0, "medium": 1, "high": 2}
-        priority_number = mapping[priority]
-        queryset = queryset.filter(priority=priority_number)
-    queryset = Task.objects.filter(user=request.user)
-
-    # Valider les query parameters
-    filters = TaskFilterSerializer(data=request.query_params)
-    filters.is_valid(raise_exception=True)
-
-    state = filters.validated_data.get("state")
-    priority = filters.validated_data.get("priority")
-
+    if search:
+        # Look for task where the title or description matches the search query
+        queryset = queryset.filter(
+            Q(title__icontains=search) | Q(description__icontains=search)
+        )
     # Map state to boolean
     if state:
         if state == "done":
