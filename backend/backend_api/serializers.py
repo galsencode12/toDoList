@@ -47,3 +47,10 @@ class TaskSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField()
+
+
+class TaskFilterSerializer(serializers.Serializer):
+    state = serializers.ChoiceField(choices=["done", "active"], required=False)
+    priority = serializers.ChoiceField(
+        choices=["low", "medium", "high"], required=False
+    )

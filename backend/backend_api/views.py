@@ -5,13 +5,19 @@ from rest_framework.decorators import (
     permission_classes,
 )
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from django.shortcuts import get_object_or_404
-from .serializers import UserLoginSerializer, TaskSerializer, UserSerializer
+from .serializers import (
+    TaskFilterSerializer,
+    UserLoginSerializer,
+    TaskSerializer,
+    UserSerializer,
+)
 from .models import Task
 from django.contrib.auth.models import User
 
@@ -100,7 +106,6 @@ def task_detail(request, pk):
     Requires authentication.
     """
     task = get_object_or_404(Task, pk=pk, user=request.user)
-
     if request.method == "GET":
         serializer = TaskSerializer(task)
         return Response(serializer.data)
@@ -115,3 +120,54 @@ def task_detail(request, pk):
     elif request.method == "DELETE":
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def search_task(request: Request):
+    # Prendre toute les taches de l'utilisateur
+    queryset = Task.objects.filter(user=request.user)
+
+    # Valider les query parameters
+    filters = TaskFilterSerializer(data=request.query_params)
+    filters.is_valid(raise_exception=True)
+
+    state = filters.validated_data.get("state")
+    priority = filters.validated_data.get("priority")
+
+    # Map state to boolean
+    if state:
+        if state == "done":
+            queryset = queryset.filter(is_completed=True)
+        elif state == "active":
+            queryset = queryset.filter(is_completed=False)
+
+    # Map priority to number
+    if priority:
+        mapping = {"low": 0, "medium": 1, "high": 2}
+        priority_number = mapping[priority]
+        queryset = queryset.filter(priority=priority_number)
+    queryset = Task.objects.filter(user=request.user)
+
+    # Valider les query parameters
+    filters = TaskFilterSerializer(data=request.query_params)
+    filters.is_valid(raise_exception=True)
+
+    state = filters.validated_data.get("state")
+    priority = filters.validated_data.get("priority")
+
+    # Map state to boolean
+    if state:
+        if state == "done":
+            queryset = queryset.filter(is_completed=True)
+        elif state == "active":
+            queryset = queryset.filter(is_completed=False)
+
+    # Map priority to number
+    if priority:
+        mapping = {"low": 0, "medium": 1, "high": 2}
+        priority_number = mapping[priority]
+        queryset = queryset.filter(priority=priority_number)
+    serializer = TaskSerializer(queryset, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
