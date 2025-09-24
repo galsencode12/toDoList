@@ -45,9 +45,7 @@ const ForgotPassword = () => {
             </p>
 
             {error && <div className="error-message">{error}</div>}
-            }
             {message && <div className="success-message">{message}</div>}
-            }
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">

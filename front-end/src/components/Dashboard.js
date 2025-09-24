@@ -29,7 +29,7 @@ const Dashboard = () => {
       <main className="dashboard-main">
         <div className="welcome-section">
           <h2>Tableau de bord</h2>
-          <p>Vous êtes maintenant connecté à TaskFlow !</p>
+          <p>Vous êtes maintenant connecté à TaskFlow ! Votre système de gestion de tâches est prêt.</p>
           <div className="stats-grid">
             <div className="stat-card">
               <h3>Tâches en cours</h3>

@@ -1,33 +1,57 @@
-// Service d'authentification
+// Service d'authentification pour simuler les appels API
 class AuthService {
   constructor() {
-    this.baseURL = 'http://localhost:3001/api'; // URL du backend
+    this.baseURL = 'http://localhost:8000/api'; // URL du backend Django
+    this.users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
+  }
+
+  // Simulation d'un délai réseau
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   // Inscription
   async register(userData) {
+    await this.delay(1000); // Simulation délai réseau
+
     try {
-      const response = await fetch(`${this.baseURL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de l\'inscription');
+      // Vérifier si l'utilisateur existe déjà
+      const existingUser = this.users.find(user => user.email === userData.email);
+      if (existingUser) {
+        throw new Error('Un compte avec cet email existe déjà');
       }
 
-      // Stocker le token
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
+      // Créer le nouvel utilisateur
+      const newUser = {
+        id: Date.now(),
+        username: userData.username,
+        email: userData.email,
+        password: userData.password, // En production, ne jamais stocker le mot de passe en clair
+        createdAt: new Date().toISOString()
+      };
 
-      return data;
+      this.users.push(newUser);
+      localStorage.setItem('mockUsers', JSON.stringify(this.users));
+
+      // Générer un token simulé
+      const token = `mock_token_${newUser.id}_${Date.now()}`;
+      
+      // Stocker le token et les infos utilisateur
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email
+      }));
+
+      return {
+        token,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email
+        }
+      };
     } catch (error) {
       throw error;
     }
@@ -35,28 +59,37 @@ class AuthService {
 
   // Connexion
   async login(credentials) {
+    await this.delay(1000); // Simulation délai réseau
+
     try {
-      const response = await fetch(`${this.baseURL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
+      // Chercher l'utilisateur
+      const user = this.users.find(u => 
+        u.email === credentials.email && u.password === credentials.password
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la connexion');
+      if (!user) {
+        throw new Error('Email ou mot de passe incorrect');
       }
 
-      // Stocker le token
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
+      // Générer un token simulé
+      const token = `mock_token_${user.id}_${Date.now()}`;
+      
+      // Stocker le token et les infos utilisateur
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({
+        id: user.id,
+        username: user.username,
+        email: user.email
+      }));
 
-      return data;
+      return {
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        }
+      };
     } catch (error) {
       throw error;
     }
@@ -64,22 +97,20 @@ class AuthService {
 
   // Mot de passe oublié
   async forgotPassword(email) {
+    await this.delay(1000); // Simulation délai réseau
+
     try {
-      const response = await fetch(`${this.baseURL}/auth/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de l\'envoi de l\'email');
+      const user = this.users.find(u => u.email === email);
+      if (!user) {
+        throw new Error('Aucun compte trouvé avec cet email');
       }
 
-      return data;
+      // En production, ici on enverrait un vrai email
+      console.log(`Email de réinitialisation envoyé à ${email}`);
+      
+      return {
+        message: 'Email de réinitialisation envoyé'
+      };
     } catch (error) {
       throw error;
     }
@@ -113,18 +144,11 @@ class AuthService {
     const token = this.getToken();
     if (!token) return false;
 
-    try {
-      const response = await fetch(`${this.baseURL}/auth/verify`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      return response.ok;
-    } catch (error) {
-      return false;
-    }
+    // Simulation de vérification
+    await this.delay(500);
+    
+    // Vérifier si le token est au bon format
+    return token.startsWith('mock_token_');
   }
 }
 
