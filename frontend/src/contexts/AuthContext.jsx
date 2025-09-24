@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import authService from "../services/authService";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth doit être utilisé dans un AuthProvider');
+    throw new Error("useAuth doit être utilisé dans un AuthProvider");
   }
   return context;
 };
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Erreur lors de la vérification du token:', error);
+      console.error("Erreur lors de la vérification du token:", error);
       authService.logout();
     } finally {
       setLoading(false);
@@ -42,25 +42,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (credentials) => {
-    try {
-      const response = await authService.login(credentials);
-      setUser(response.user);
-      setIsAuthenticated(true);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await authService.login(credentials);
+    setUser(response.user);
+    setIsAuthenticated(true);
+    return response;
   };
 
   const register = async (userData) => {
-    try {
-      const response = await authService.register(userData);
-      setUser(response.user);
-      setIsAuthenticated(true);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await authService.register(userData);
+    setUser(response.user);
+    setIsAuthenticated(true);
+    return response;
   };
 
   const logout = () => {
@@ -70,11 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const forgotPassword = async (email) => {
-    try {
-      return await authService.forgotPassword(email);
-    } catch (error) {
-      throw error;
-    }
+    return await authService.forgotPassword(email);
   };
 
   const value = {
@@ -87,9 +75,5 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
