@@ -28,12 +28,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]  # accept all hosts (ok for dev, NOT for prod)
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "django.contrib.admin",
@@ -130,3 +131,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CORS_ALLOW_ALL_ORIGINS = True  # accept all origins (ok for dev, NOT for prod)
+CORS_ALLOW_CREDENTIALS = True  # so cookies/session work
