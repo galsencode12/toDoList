@@ -1,29 +1,33 @@
+import { BASE_URL, getCSRFToken } from "../helpers";
+
 // Service d'authentification
 class AuthService {
   constructor() {
-    this.baseURL = "http://localhost:3001/api"; // URL du backend
+    this.baseURL = BASE_URL; // URL du backend
   }
-
   // Inscription
   async register(userData) {
-    const response = await fetch(`${this.baseURL}/auth/register`, {
+    //Appel l'endpoint /register
+    const token = await getCSRFToken();
+    const response = await fetch(`${this.baseURL}/register/`, {
       method: "POST",
+      // credentials :include permet d'include le session_id dans les cookies ,
+      // Important pour l'authentification coté backend
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        //ajout du token csrf dans les headers
+        "X-CSRFToken": token,
       },
       body: JSON.stringify(userData),
     });
 
     const data = await response.json();
+    console.log(response.status);
+    console.log(data);
 
     if (!response.ok) {
       throw new Error(data.message || "Erreur lors de l'inscription");
-    }
-
-    // Stocker le token
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
     }
 
     return data;
@@ -31,88 +35,85 @@ class AuthService {
 
   // Connexion
   async login(credentials) {
-    const response = await fetch(`${this.baseURL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    });
+    //Appel l'endpoint /login
+    const token = await getCSRFToken();
+    const response = await fetch(
+      `${this.baseURL}/login/`,
+
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        body: JSON.stringify(credentials),
+      }
+    );
 
     const data = await response.json();
+    console.log(response.status);
+    console.log(data);
 
     if (!response.ok) {
       throw new Error(data.message || "Erreur lors de la connexion");
     }
-
-    // Stocker le token
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-    }
-
     return data;
   }
-
+  // je commente ca parce que c'est pas une fonctionalité que j'ai implémenté dans le backend
   // Mot de passe oublié
-  async forgotPassword(email) {
-    const response = await fetch(`${this.baseURL}/auth/forgot-password`, {
+  // async forgotPassword(email) {
+  // const token = await getCSRFToken();
+  //   const response = await fetch(`${this.baseURL}/forgot-password`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  // "X-CSRFToken": token,
+  //     },
+  //     body: JSON.stringify({ email }),
+  //   });
+
+  //   const data = await response.json();
+
+  //   if (!response.ok) {
+  //     throw new Error(data.message || "Erreur lors de l'envoi de l'email");
+  //   }
+
+  //   return data;
+  // }
+
+  // Déconnexion
+  async logout() {
+    //Appel l'endpoint /logout
+    const token = await getCSRFToken();
+    const response = await fetch(`${this.baseURL}/logout/`, {
+      credentials: "include",
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": token,
       },
-      body: JSON.stringify({ email }),
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Erreur lors de l'envoi de l'email");
-    }
-
-    return data;
-  }
-
-  // Déconnexion
-  logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    console.log(response.status);
+    console.log(response.json());
   }
 
   // Vérifier si l'utilisateur est connecté
-  isAuthenticated() {
-    const token = localStorage.getItem("token");
-    return !!token;
-  }
-
-  // Obtenir le token
-  getToken() {
-    return localStorage.getItem("token");
-  }
-
-  // Obtenir l'utilisateur actuel
-  getCurrentUser() {
-    const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
-  }
-
-  // Vérifier la validité du token
-  async verifyToken() {
-    const token = this.getToken();
-    if (!token) return false;
-
-    try {
-      const response = await fetch(`${this.baseURL}/auth/verify`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return response.ok;
-    } catch {
-      return false;
-    }
+  async isAuthenticated() {
+    const token = await getCSRFToken();
+    //Appel l'endpoint /is_authenticated
+    const response = await fetch(`${this.baseURL}/is_authenticated/`, {
+      credentials: "include",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+    });
+    //{authenticated:boolean}
+    const authenticated = await response.json();
+    console.log(authenticated);
+    return authenticated.authenticated;
   }
 }
 

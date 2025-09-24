@@ -132,5 +132,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",  # React dev server
+    "http://127.0.0.1:5173",  # sometimes you switch between localhost/127.0.0.1
+    "https://todolist-xyaj.onrender.com",  # when deployed
+]
 CORS_ALLOW_ALL_ORIGINS = True  # accept all origins (ok for dev, NOT for prod)
 CORS_ALLOW_CREDENTIALS = True  # so cookies/session work
+SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

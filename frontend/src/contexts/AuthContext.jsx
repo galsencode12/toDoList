@@ -1,18 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import authService from "../services/authService";
-
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth doit être utilisé dans un AuthProvider");
-  }
-  return context;
-};
+import { AuthContext } from "../helpers.js";
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -22,16 +12,9 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const token = authService.getToken();
-      if (token) {
-        const isValid = await authService.verifyToken();
-        if (isValid) {
-          const currentUser = authService.getCurrentUser();
-          setUser(currentUser);
-          setIsAuthenticated(true);
-        } else {
-          authService.logout();
-        }
+      const isAuthenticated = await authService.isAuthenticated();
+      if (isAuthenticated) {
+        setIsAuthenticated(true);
       }
     } catch (error) {
       console.error("Erreur lors de la vérification du token:", error);
@@ -43,30 +26,26 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     const response = await authService.login(credentials);
-    setUser(response.user);
     setIsAuthenticated(true);
     return response;
   };
 
   const register = async (userData) => {
     const response = await authService.register(userData);
-    setUser(response.user);
     setIsAuthenticated(true);
     return response;
   };
 
   const logout = () => {
     authService.logout();
-    setUser(null);
     setIsAuthenticated(false);
   };
 
   const forgotPassword = async (email) => {
     return await authService.forgotPassword(email);
   };
-
+  console.log(isAuthenticated);
   const value = {
-    user,
     isAuthenticated,
     loading,
     login,

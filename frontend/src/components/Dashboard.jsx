@@ -1,13 +1,26 @@
-import React from "react";
-import { useAuth } from "../contexts/AuthContext.jsx";
+import React, { useEffect } from "react";
+import { useAuth } from "../helpers";
 import "./Dashboard.css";
+import { useState } from "react";
+import { getDashboardData } from "../services/taskService";
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
-
+  const { logout } = useAuth();
+  const [username, setUsername] = useState("");
+  const [tasks, setTasks] = useState([]);
   const handleLogout = () => {
     logout();
   };
+
+  useEffect(() => {
+    (async () => {
+      const { username, taskData } = await getDashboardData();
+      console.log(username);
+      console.log(taskData);
+      setUsername(username);
+      setTasks(taskData);
+    })();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -18,7 +31,7 @@ const Dashboard = () => {
             <h1>TaskFlow</h1>
           </div>
           <div className="user-section">
-            <span>Bienvenue, {user?.username || user?.email}</span>
+            <span>Bienvenue,{username} </span>
             <button onClick={handleLogout} className="logout-button">
               Déconnexion
             </button>
