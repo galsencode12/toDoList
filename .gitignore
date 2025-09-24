@@ -1,12 +1,15 @@
-# front-end
+# Node
 node_modules/
 
-# backend
+# Python
 __pycache__/
 venv/
 *.pyc
+
+# Env files
 .env
 
+# Custom ignores
 **/factories.py
 note.txt
 **/note.txt
