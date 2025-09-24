@@ -25,6 +25,11 @@ from django.contrib.auth.models import User
 
 
 @api_view(["GET"])
+def check_auth_status(request: Request):
+    return Response({"authenticated": request.user.is_authenticated})
+
+
+@api_view(["GET"])
 def csrf_token_view(request):
     return JsonResponse({"csrfToken": get_token(request)})
 
