@@ -52,6 +52,7 @@ const Login = () => {
             <p className="form-subtitle">Connectez-vous à votre compte pour accéder à vos tâches.</p>
 
             {error && <div className="error-message">{error}</div>}
+            }
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
