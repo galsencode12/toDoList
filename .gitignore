@@ -1,6 +1,17 @@
-/venv
+# Node
+node_modules/
+
+# Python
+__pycache__/
+venv/
+*.pyc
+
+# Env files
 .env
+
+# Custom ignores
 **/factories.py
 note.txt
+**/note.txt
+management/
 **/management/
-**/__pycache__/
