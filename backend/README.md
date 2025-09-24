@@ -1,4 +1,4 @@
-````markdown
+
 # Documentation de l'API TodoList
 
 ---
@@ -138,6 +138,3 @@ axios.get('/api/csrf/', { withCredentials: true })
   * **Réponse :** `200 OK` (`GET`, `PUT`), `204 NO CONTENT` (`DELETE`).
 
 <!-- end list -->
-
-```
-```
