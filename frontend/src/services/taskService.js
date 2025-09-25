@@ -59,6 +59,34 @@ export async function deleteTask(id) {
   }
 }
 
+export async function getCompletedTasks() {
+  const token = await getCSRFToken();
+  // requete vers /api/tasks/filter?state=done
+  const response = await fetch(`${BASE_URL}/tasks/filter?state=done`, {
+    credentials: "include",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+export async function getActiveTasks() {
+  const token = await getCSRFToken();
+  // requete vers /api/tasks/filter?state=done
+  const response = await fetch(`${BASE_URL}/tasks/filter?state=active`, {
+    credentials: "include",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+  });
+  const data = await response.json();
+  return data;
+}
 async function editTask(task) {
   const token = await getCSRFToken();
   const response = await fetch(`${BASE_URL}/tasks/${task.id}`, {
@@ -91,33 +119,4 @@ export async function toggleTaskState(task) {
   } catch (error) {
     console.error(error);
   }
-}
-
-export async function getCompletedTasks() {
-  const token = await getCSRFToken();
-  // requete vers /api/tasks/filter?state=done
-  const response = await fetch(`${BASE_URL}/tasks/filter?state=done`, {
-    credentials: "include",
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": token,
-    },
-  });
-  const data = await response.json();
-  return data;
-}
-export async function getActiveTasks() {
-  const token = await getCSRFToken();
-  // requete vers /api/tasks/filter?state=done
-  const response = await fetch(`${BASE_URL}/tasks/filter?state=active`, {
-    credentials: "include",
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": token,
-    },
-  });
-  const data = await response.json();
-  return data;
 }

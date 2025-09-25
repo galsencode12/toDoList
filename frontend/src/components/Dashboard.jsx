@@ -65,13 +65,14 @@ const Dashboard = () => {
     (async () => await refreshTasks())();
   }, [filter, refreshTasks]);
 
+  // Supprimer une tache
   const handleDeleteTask = (taskId) => {
     (async () => {
       await deleteTask(taskId);
       await refreshTasks();
     })();
   };
-
+  // Ajouter une tache
   const addTask = (title, description, due_date) => {
     const newTask = {
       title,
@@ -82,7 +83,7 @@ const Dashboard = () => {
     createTask(newTask);
     refreshTasks();
   };
-
+  // Marquer les tache comme terminées ou en cour
   const handleToggle = (task) => {
     (async () => {
       await toggleTaskState(task);
