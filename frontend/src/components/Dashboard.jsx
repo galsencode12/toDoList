@@ -1,65 +1,104 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddTask from "../components/AddTask.jsx";
 import TaskList from "../components/TaskList.jsx";
 import FilterTask from "../components/FilterTask.jsx";
 import { useAuth } from "../helpers";
 import "./Dashboard.css";
 
-import { getDashboardData } from "../services/taskService";
+import {
+  createTask,
+  deleteTask,
+  getActiveTasks,
+  getCompletedTasks,
+  getDashboardData,
+  toggleTaskState,
+} from "../services/taskService";
 
 const Dashboard = () => {
   const { logout } = useAuth();
   const [username, setUsername] = useState("");
-  const [tasks, setTasks] = useState([{}]);
-  const handleLogout = () => {
-    logout();
-  };
-  // Le code dans useEffect est executé dés le chargement du component sur la page
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [filter, setFilter] = useState("all"); // all | pending | completed
+  // Le code dans ce useEffect est executé dés le chargement du component sur la page
   useEffect(() => {
     (async () => {
       const { username, tasks } = await getDashboardData();
       console.log(username);
       console.log(tasks);
       setTasks(tasks);
+      setFilteredTasks(tasks);
       setUsername(username);
     })();
   }, []);
 
-  // Les etats filter doivent etre soit all, pending ou completed
-  const [filter, setFilter] = useState("all");
+  const handleLogout = () => {
+    logout();
+  };
+  // useCallback c'est pour que la fonction ne soit pas appelée
+  // à chaque actualisation de la page
+  // Actualiser les taches lors d'un changement comme suppression ,marquage ou filtre
+  const refreshTasks = useCallback(() => {
+    (async () => {
+      console.log("filter triggered");
+      if (filter == "all") {
+        // requete toutes les taches
+        const { _, tasks } = await getDashboardData();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+      if (filter === "pending") {
+        const tasks = await getActiveTasks();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+      if (filter === "completed") {
+        const tasks = await getCompletedTasks();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+    })();
+  }, [filter]);
+
+  // Le code dans ce useEffect dépend de la variable filter et s'execute lorsque filter change
+  useEffect(() => {
+    (async () => await refreshTasks())();
+  }, [filter, refreshTasks]);
+
+  const handleDeleteTask = (taskId) => {
+    (async () => {
+      await deleteTask(taskId);
+      await refreshTasks();
+    })();
+  };
+
   const addTask = (title, description, due_date) => {
     const newTask = {
-      id: Date.now(),
       title,
       description: description || "",
       due_date: due_date || null,
       completed: false,
     };
-    setTasks([newTask, ...tasks]);
+    createTask(newTask);
+    refreshTasks();
   };
 
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
+  const handleToggle = (task) => {
+    (async () => {
+      await toggleTaskState(task);
+      await refreshTasks();
+    })();
   };
-
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((t) => t.id !== id));
-  };
-
-  const filteredTasks = tasks.filter((t) => {
-    if (filter === "pending") return !t.is_completed;
-    if (filter === "completed") return t.is_completed;
-    return true;
-  });
-
   // Fonction pour renvoyer les taches en retard
   const overDueTasks = () => {
     const today = new Date();
-    const filter = tasks.filter((task) => today > task.updated_at);
-    console.log(filter);
-    return filter.length;
+    return tasks.filter((task) => {
+      // On compte pas les taches dont leur échéance est null
+      if (!task.due_date) return false;
+      const dueDate = new Date(task.due_date);
+
+      return dueDate < today && !task.is_completed;
+    }).length;
   };
 
   return (
@@ -107,11 +146,11 @@ const Dashboard = () => {
         </div>
         <div className="tasks-section" style={{ marginTop: "40px" }}>
           <AddTask addTask={addTask} />
-          <FilterTask filter={filter} setFilter={setFilter} />
+          <FilterTask setFilter={setFilter} />
           <TaskList
             tasks={filteredTasks}
-            toggleTask={() => toggleTask()}
-            deleteTask={deleteTask}
+            onToggle={handleToggle}
+            deleteTask={handleDeleteTask}
           />
         </div>
       </main>

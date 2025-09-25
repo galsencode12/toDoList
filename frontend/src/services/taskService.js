@@ -40,7 +40,7 @@ export async function createTask(newTask) {
 }
 export async function deleteTask(id) {
   const token = await getCSRFToken();
-  const response = await fetch(`${BASE_URL}/tasks/${id}/`, {
+  const response = await fetch(`${BASE_URL}/tasks/${id}`, {
     method: "DELETE",
     // credentials :include permet d'include le session_id dans les cookies ,
     // Important pour l'authentification coté backend
@@ -52,19 +52,17 @@ export async function deleteTask(id) {
     },
   });
 
-  const data = await response.json();
   console.log(response.status);
-  console.log(data);
 
   if (!response.ok) {
-    throw new Error(data.message || "Erreur lors de la suppression de tache");
+    throw new Error("Erreur lors de la suppression de tache");
   }
 }
 
 async function editTask(task) {
   const token = await getCSRFToken();
-  const response = await fetch(`${BASE_URL}/tasks/${task.id}/`, {
-    method: "DELETE",
+  const response = await fetch(`${BASE_URL}/tasks/${task.id}`, {
+    method: "PUT",
     // credentials :include permet d'include le session_id dans les cookies ,
     // Important pour l'authentification coté backend
     credentials: "include",
@@ -73,6 +71,7 @@ async function editTask(task) {
       //ajout du token csrf dans les headers
       "X-CSRFToken": token,
     },
+    body: JSON.stringify(task),
   });
 
   const data = await response.json();
@@ -84,7 +83,7 @@ async function editTask(task) {
   }
 }
 // Marquer une tache complete ou en progression
-export async function toggleTask(task) {
+export async function toggleTaskState(task) {
   try {
     // Inverser is_completed
     task.is_completed = !task.is_completed;
@@ -97,7 +96,7 @@ export async function toggleTask(task) {
 export async function getCompletedTasks() {
   const token = await getCSRFToken();
   // requete vers /api/tasks/filter?state=done
-  const response = await fetch(`${BASE_URL}/tasks/filter?state=done/`, {
+  const response = await fetch(`${BASE_URL}/tasks/filter?state=done`, {
     credentials: "include",
     method: "GET",
     headers: {
@@ -106,7 +105,7 @@ export async function getCompletedTasks() {
     },
   });
   const data = await response.json();
-  return data.tasks;
+  return data;
 }
 export async function getActiveTasks() {
   const token = await getCSRFToken();
@@ -120,5 +119,5 @@ export async function getActiveTasks() {
     },
   });
   const data = await response.json();
-  return data.tasks;
+  return data;
 }

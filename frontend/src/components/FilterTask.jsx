@@ -1,6 +1,6 @@
 import React from "react";
 
-const FilterTask = ({ filter, setFilter }) => {
+const FilterTask = ({ setFilter }) => {
   return (
     <div style={{ marginBottom: "20px" }}>
       <button onClick={() => setFilter("all")} style={{ marginRight: "10px" }}>

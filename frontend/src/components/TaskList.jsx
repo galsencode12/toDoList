@@ -1,7 +1,7 @@
 import React from "react";
 import TaskItem from "./TaskItem.jsx";
 
-const TaskList = ({ tasks, toggleTask, deleteTask }) => {
+const TaskList = ({ tasks, onToggle, deleteTask }) => {
   if (tasks.length === 0) return <p>Aucune tâche pour le moment.</p>;
 
   return (
@@ -10,7 +10,7 @@ const TaskList = ({ tasks, toggleTask, deleteTask }) => {
         <TaskItem
           key={index}
           task={task}
-          toggleTask={toggleTask}
+          onToggle={onToggle}
           deleteTask={deleteTask}
         />
       ))}

@@ -1,6 +1,7 @@
 import React from "react";
+// import { toggleTaskState } from "../services/taskService";
 
-const TaskItem = ({ task, toggleTask, deleteTask }) => {
+const TaskItem = ({ task, onToggle, deleteTask }) => {
   return (
     <div
       style={{
@@ -35,10 +36,7 @@ const TaskItem = ({ task, toggleTask, deleteTask }) => {
         )}
       </div>
       <div>
-        <button
-          onClick={() => toggleTask(task.id)}
-          style={{ marginRight: "10px" }}
-        >
+        <button onClick={() => onToggle(task)} style={{ marginRight: "10px" }}>
           {task.is_completed ? "↩️" : "✔️"}
         </button>
         <button onClick={() => deleteTask(task.id)}>🗑️</button>
