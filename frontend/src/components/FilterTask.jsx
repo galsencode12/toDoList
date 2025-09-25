@@ -6,12 +6,13 @@ const FilterTask = ({ filter, setFilter }) => {
       <button onClick={() => setFilter("all")} style={{ marginRight: "10px" }}>
         Toutes
       </button>
-      <button onClick={() => setFilter("pending")} style={{ marginRight: "10px" }}>
+      <button
+        onClick={() => setFilter("pending")}
+        style={{ marginRight: "10px" }}
+      >
         En cours
       </button>
-      <button onClick={() => setFilter("completed")}>
-        Terminées
-      </button>
+      <button onClick={() => setFilter("completed")}>Terminées</button>
     </div>
   );
 };

@@ -1,30 +1,38 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import AddTask from "../components/AddTask.jsx";
 import TaskList from "../components/TaskList.jsx";
 import FilterTask from "../components/FilterTask.jsx";
-import React, { useEffect } from "react";
 import { useAuth } from "../helpers";
 import "./Dashboard.css";
-import { useState } from "react";
+
 import { getDashboardData } from "../services/taskService";
 
 const Dashboard = () => {
-  const user = { username: "TestUser", email: "test@example.com" };
-  const logout = () => alert("Déconnexion simulée");
+  const { logout } = useAuth();
+  const [username, setUsername] = useState("");
+  const [tasks, setTasks] = useState([{}]);
+  const handleLogout = () => {
+    logout();
+  };
+  // Le code dans useEffect est executé dés le chargement du component sur la page
+  useEffect(() => {
+    (async () => {
+      const { username, tasks } = await getDashboardData();
+      console.log(username);
+      console.log(tasks);
+      setTasks(tasks);
+      setUsername(username);
+    })();
+  }, []);
 
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Tâche 1", completed: false },
-    { id: 2, title: "Tâche 2", completed: true },
-    { id: 3, title: "Tâche 3", completed: false },
-  ]);
+  // Les etats filter doivent etre soit all, pending ou completed
   const [filter, setFilter] = useState("all");
-
   const addTask = (title, description, due_date) => {
     const newTask = {
       id: Date.now(),
       title,
       description: description || "",
-      due_date: due_date || "",
+      due_date: due_date || null,
       completed: false,
     };
     setTasks([newTask, ...tasks]);
@@ -41,26 +49,18 @@ const Dashboard = () => {
   };
 
   const filteredTasks = tasks.filter((t) => {
-    if (filter === "pending") return !t.completed;
-    if (filter === "completed") return t.completed;
+    if (filter === "pending") return !t.is_completed;
+    if (filter === "completed") return t.is_completed;
     return true;
   });
-  const { logout } = useAuth();
-  const [username, setUsername] = useState("");
-  const [tasks, setTasks] = useState([]);
-  const handleLogout = () => {
-    logout();
-  };
 
-  useEffect(() => {
-    (async () => {
-      const { username, taskData } = await getDashboardData();
-      console.log(username);
-      console.log(taskData);
-      setUsername(username);
-      setTasks(taskData);
-    })();
-  }, []);
+  // Fonction pour renvoyer les taches en retard
+  const overDueTasks = () => {
+    const today = new Date();
+    const filter = tasks.filter((task) => today > task.updated_at);
+    console.log(filter);
+    return filter.length;
+  };
 
   return (
     <div className="dashboard-container">
@@ -84,20 +84,24 @@ const Dashboard = () => {
           <p>Ajoutez, suivez et organisez vos tâches en toute simplicité !</p>
           <div className="stats-grid">
             <div className="stat-card">
+              <h3>Total</h3>
+              <div className="stat-number">{tasks.length}</div>
+            </div>
+            <div className="stat-card">
               <h3>Tâches en cours</h3>
               <div className="stat-number">
-                {tasks.filter((t) => !t.completed).length}
+                {tasks.filter((t) => !t.is_completed).length}
               </div>
             </div>
             <div className="stat-card">
               <h3>Tâches terminées</h3>
               <div className="stat-number">
-                {tasks.filter((t) => t.completed).length}
+                {tasks.filter((t) => t.is_completed).length}
               </div>
             </div>
             <div className="stat-card">
-              <h3>Projets actifs</h3>
-              <div className="stat-number">0</div>
+              <h3>Tâches en retard</h3>
+              <div className="stat-number">{overDueTasks()}</div>
             </div>
           </div>
         </div>
@@ -106,7 +110,7 @@ const Dashboard = () => {
           <FilterTask filter={filter} setFilter={setFilter} />
           <TaskList
             tasks={filteredTasks}
-            toggleTask={toggleTask}
+            toggleTask={() => toggleTask()}
             deleteTask={deleteTask}
           />
         </div>

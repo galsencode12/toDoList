@@ -2,6 +2,7 @@ import { BASE_URL, getCSRFToken } from "../helpers";
 
 export async function getDashboardData() {
   const token = await getCSRFToken();
+  // requete vers /api/tasks/
   const response = await fetch(`${BASE_URL}/tasks/`, {
     credentials: "include",
     method: "GET",
@@ -14,21 +15,110 @@ export async function getDashboardData() {
   //{ username, tasks }
   return await response.json();
 }
-// /api/tasks/ renvoie une réponse comme ici
-/*
-{
-  "username": "antoniodelacruz",
-  "tasks": [
-    {
-      "id": 27,
-      "title": "Likely success fast event.",
-      "description": "Explain consider several bank full skill six. Financial enough soon leg.\nHere the nice wait. Bank piece financial area from. Garden among unit last little.",
-      "is_completed": true,
-      "due_date": "2025-09-20",
-      "priority": 1,
-      "created_at": "2025-09-24T12:25:00.219688Z",
-      "updated_at": "2025-09-24T12:25:00.219697Z"
+export async function createTask(newTask) {
+  const token = await getCSRFToken();
+  const response = await fetch(`${BASE_URL}/tasks/`, {
+    method: "POST",
+    // credentials :include permet d'include le session_id dans les cookies ,
+    // Important pour l'authentification coté backend
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      //ajout du token csrf dans les headers
+      "X-CSRFToken": token,
     },
-    ...
-    ...
-*/
+    body: JSON.stringify(newTask),
+  });
+
+  const data = await response.json();
+  console.log(response.status);
+  console.log(data);
+
+  if (!response.ok) {
+    throw new Error(data.message || "Erreur lors de la creation de tache");
+  }
+}
+export async function deleteTask(id) {
+  const token = await getCSRFToken();
+  const response = await fetch(`${BASE_URL}/tasks/${id}/`, {
+    method: "DELETE",
+    // credentials :include permet d'include le session_id dans les cookies ,
+    // Important pour l'authentification coté backend
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      //ajout du token csrf dans les headers
+      "X-CSRFToken": token,
+    },
+  });
+
+  const data = await response.json();
+  console.log(response.status);
+  console.log(data);
+
+  if (!response.ok) {
+    throw new Error(data.message || "Erreur lors de la suppression de tache");
+  }
+}
+
+async function editTask(task) {
+  const token = await getCSRFToken();
+  const response = await fetch(`${BASE_URL}/tasks/${task.id}/`, {
+    method: "DELETE",
+    // credentials :include permet d'include le session_id dans les cookies ,
+    // Important pour l'authentification coté backend
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      //ajout du token csrf dans les headers
+      "X-CSRFToken": token,
+    },
+  });
+
+  const data = await response.json();
+  console.log(response.status);
+  console.log(data);
+
+  if (!response.ok) {
+    throw new Error(data.message || "Erreur lors de la modification de tache");
+  }
+}
+// Marquer une tache complete ou en progression
+export async function toggleTask(task) {
+  try {
+    // Inverser is_completed
+    task.is_completed = !task.is_completed;
+    await editTask(task);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getCompletedTasks() {
+  const token = await getCSRFToken();
+  // requete vers /api/tasks/filter?state=done
+  const response = await fetch(`${BASE_URL}/tasks/filter?state=done/`, {
+    credentials: "include",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+  });
+  const data = await response.json();
+  return data.tasks;
+}
+export async function getActiveTasks() {
+  const token = await getCSRFToken();
+  // requete vers /api/tasks/filter?state=done
+  const response = await fetch(`${BASE_URL}/tasks/filter?state=active`, {
+    credentials: "include",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+  });
+  const data = await response.json();
+  return data.tasks;
+}

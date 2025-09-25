@@ -1,6 +1,6 @@
 .dashboard-container {
   min-height: 100vh;
-  background: #F8FFFE;
+  background: #f8fffe;
 }
 
 .dashboard-header {
@@ -27,7 +27,7 @@
 .logo-section .logo-icon {
   width: 40px;
   height: 40px;
-  background: #4ECDC4;
+  background: #4ecdc4;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -38,7 +38,7 @@
 }
 
 .logo-section h1 {
-  color: #2C3E50;
+  color: #2c3e50;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -51,12 +51,12 @@
 }
 
 .user-section span {
-  color: #2C3E50;
+  color: #2c3e50;
   font-weight: 500;
 }
 
 .logout-button {
-  background: #E74C3C;
+  background: #e74c3c;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -67,7 +67,7 @@
 }
 
 .logout-button:hover {
-  background: #C0392B;
+  background: #c0392b;
 }
 
 .dashboard-main {
@@ -77,14 +77,14 @@
 }
 
 .welcome-section h2 {
-  color: #2C3E50;
+  color: #2c3e50;
   font-size: 32px;
   font-weight: 700;
   margin: 0 0 8px 0;
 }
 
 .welcome-section p {
-  color: #7F8C8D;
+  color: #7f8c8d;
   font-size: 16px;
   margin: 0 0 40px 0;
 }
@@ -110,7 +110,7 @@
 }
 
 .stat-card h3 {
-  color: #7F8C8D;
+  color: #7f8c8d;
   font-size: 14px;
   font-weight: 600;
   margin: 0 0 15px 0;
@@ -119,7 +119,7 @@
 }
 
 .stat-number {
-  color: #4ECDC4;
+  color: #4ecdc4;
   font-size: 36px;
   font-weight: 700;
 }
@@ -130,20 +130,20 @@
     gap: 20px;
     text-align: center;
   }
-  
+
   .user-section {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .dashboard-main {
     padding: 20px;
   }
-  
+
   .welcome-section h2 {
     font-size: 24px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }

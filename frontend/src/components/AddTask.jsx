@@ -4,7 +4,7 @@ const AddTask = ({ addTask }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState(0); 
+  const [priority, setPriority] = useState(0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,7 +41,11 @@ const AddTask = ({ addTask }) => {
         onChange={(e) => setDueDate(e.target.value)}
         style={{ marginRight: "10px" }}
       />
-      <select value={priority} onChange={(e) => setPriority(Number(e.target.value))} style={{ marginRight: "10px" }}>
+      <select
+        value={priority}
+        onChange={(e) => setPriority(Number(e.target.value))}
+        style={{ marginRight: "10px" }}
+      >
         <option value={0}>Basse</option>
         <option value={1}>Moyenne</option>
         <option value={2}>Haute</option>

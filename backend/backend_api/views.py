@@ -92,7 +92,7 @@ def task_list(request):
     Requires authentication.
     """
     if request.method == "GET":
-        tasks = Task.objects.filter(user=request.user)
+        tasks = Task.objects.filter(user=request.user).order_by("-updated_at")
         payload = {
             "username": request.user.username,
             "tasks": tasks,
