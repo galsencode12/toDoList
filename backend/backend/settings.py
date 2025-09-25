@@ -136,6 +136,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  # React dev server
     "http://127.0.0.1:5173",  # sometimes you switch between localhost/127.0.0.1
     "https://todolist-xyaj.onrender.com",  # when deployed
+    "https://todolist-beige-omega.vercel.app",
 ]
 CORS_ALLOW_ALL_ORIGINS = True  # accept all origins (ok for dev, NOT for prod)
 CORS_ALLOW_CREDENTIALS = True  # so cookies/session work
