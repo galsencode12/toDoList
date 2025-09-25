@@ -25,7 +25,47 @@ const Dashboard = () => {
     })();
   }, []);
 
-  const addTask = (title, description, due_date, priority) => {
+  const handleLogout = () => {
+    logout();
+  };
+  // useCallback c'est pour que la fonction ne soit pas appelée
+  // à chaque actualisation de la page
+  // Actualiser les taches lors d'un changement comme suppression ,marquage ou filtre
+  const refreshTasks = useCallback(() => {
+    (async () => {
+      console.log("filter triggered");
+      if (filter == "all") {
+        // requete toutes les taches
+        const { _, tasks } = await getDashboardData();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+      if (filter === "pending") {
+        const tasks = await getActiveTasks();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+      if (filter === "completed") {
+        const tasks = await getCompletedTasks();
+        console.log(tasks);
+        setFilteredTasks(tasks);
+      }
+    })();
+  }, [filter]);
+
+  // Le code dans ce useEffect dépend de la variable filter et s'execute lorsque filter change
+  useEffect(() => {
+    (async () => await refreshTasks())();
+  }, [filter, refreshTasks]);
+
+  const handleDeleteTask = (taskId) => {
+    (async () => {
+      await deleteTask(taskId);
+      await refreshTasks();
+    })();
+  };
+
+  const addTask = (title, description, due_date) => {
     const newTask = {
       id: Date.now(),
       title,
@@ -37,14 +77,11 @@ const Dashboard = () => {
     setTasks([newTask, ...tasks]);
   };
 
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-  };
-
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((t) => t.id !== id));
+  const handleToggle = (task) => {
+    (async () => {
+      await toggleTaskState(task);
+      await refreshTasks();
+    })();
   };
 
   const filteredTasks = tasks.filter((t) => {
