@@ -1,48 +1,35 @@
 import React from "react";
-// import { toggleTaskState } from "../services/taskService";
 
-const TaskItem = ({ task, onToggle, deleteTask }) => {
+export default function TaskItem({ task, onToggle, deleteTask }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        marginBottom: "10px",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-      }}
-    >
-      <div>
-        <h4
-          style={{
-            textDecoration: task.is_completed ? "line-through" : "none",
-          }}
-        >
-          {task.title}
-        </h4>
-        {task.description && <p>{task.description}</p>}
-        {task.due_date && <small>Échéance : {task.due_date}</small>}
-        {task.priority === 2 && (
-          <span style={{ color: "red", marginLeft: "10px" }}>⚠ Haute</span>
+    <div className={`task-item ${task.completed ? "completed" : ""}`}>
+      <input
+        type="checkbox"
+        checked={task.completed}
+        onChange={() => onToggle(task.id)}
+        className="task-checkbox"
+      />
+
+      <div className="task-info">
+        <span className="task-title">{task.title}</span>
+        {task.description && (
+          <span className="task-desc">Description: {task.description}</span>
         )}
-        {task.priority === 1 && (
-          <span style={{ color: "orange", marginLeft: "10px" }}>! Moyenne</span>
+        {task.due_date && (
+          <span className="task-date">Échéance: {task.due_date}</span>
         )}
-        {task.priority === 0 && (
-          <span style={{ color: "green", marginLeft: "10px" }}>Basse</span>
-        )}
+        <span className="task-priority">
+          Priorité: {["Basse", "Moyenne", "Haute"][task.priority]}
+        </span>
       </div>
-      <div>
-        <button onClick={() => onToggle(task)} style={{ marginRight: "10px" }}>
-          {task.is_completed ? "↩️" : "✔️"}
-        </button>
-        <button onClick={() => deleteTask(task.id)}>🗑️</button>
-      </div>
+
+      <button
+        className="delete"
+        onClick={() => deleteTask(task.id)}
+        title="Supprimer la tâche"
+      >
+        Supprimer
+      </button>
     </div>
   );
-};
-
-export default TaskItem;
+}

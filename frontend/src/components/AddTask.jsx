@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Dashboard.css";
 
 const AddTask = ({ addTask }) => {
   const [title, setTitle] = useState("");
@@ -19,13 +20,12 @@ const AddTask = ({ addTask }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+    <form className="add-task-container" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Titre"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={{ marginRight: "10px" }}
         required
       />
       <input
@@ -33,18 +33,15 @@ const AddTask = ({ addTask }) => {
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        style={{ marginRight: "10px" }}
       />
       <input
         type="date"
         value={dueDate}
         onChange={(e) => setDueDate(e.target.value)}
-        style={{ marginRight: "10px" }}
       />
       <select
         value={priority}
         onChange={(e) => setPriority(Number(e.target.value))}
-        style={{ marginRight: "10px" }}
       >
         <option value={0}>Basse</option>
         <option value={1}>Moyenne</option>

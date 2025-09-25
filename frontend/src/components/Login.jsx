@@ -42,7 +42,7 @@ const Login = () => {
           <div className="logo">
             <div className="logo-icon">✓</div>
           </div>
-          <h1 className="app-title">TaskFlow</h1>
+          <h1 className="app-title">ToDoList</h1>
           <p className="app-subtitle">Gérez vos tâches efficacement</p>
         </div>
 
