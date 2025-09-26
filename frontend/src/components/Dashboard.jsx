@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]); // source of truth: tasks list from server
   const [filter, setFilter] = useState("all"); // filter state: all | pending | completed
 
-  // Charger les données utilisateur + toutes les tâches au premier rendu
+  // Charger les dopnnées utilisateur + toutes les tâches au premier rendu
   useEffect(() => {
     (async () => {
       const { username, tasks } = await getDashboardData();
