@@ -13,13 +13,13 @@ export default function TaskItem({ task, onToggle, deleteTask }) {
       <div className="task-info">
         <span className="task-title">{task.title}</span>
         {task.description && (
-          <span className="task-desc">Description: {task.description}</span>
+          <span className="task-desc">{task.description}</span>
         )}
         {task.due_date && (
-          <span className="task-date">Échéance: {task.due_date}</span>
+          <span className="task-date">Échéance : {task.due_date}</span>
         )}
         <span className="task-priority">
-          Priorité: {["Basse", "Moyenne", "Haute"][task.priority]}
+          Priorité : {["Basse", "Moyenne", "Haute"][task.priority]}
         </span>
       </div>
 
