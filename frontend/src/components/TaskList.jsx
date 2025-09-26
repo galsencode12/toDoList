@@ -5,10 +5,10 @@ const TaskList = ({ tasks, onToggle, deleteTask }) => {
   if (tasks.length === 0) return <p>Aucune tâche pour le moment.</p>;
 
   return (
-    <div>
-      {tasks.map((task, index) => (
+    <div className="task-list">
+      {tasks.map((task) => (
         <TaskItem
-          key={index}
+          key={task.id}
           task={task}
           onToggle={onToggle}
           deleteTask={deleteTask}
