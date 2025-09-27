@@ -18,7 +18,7 @@ import {
 const Dashboard = () => {
   const { logout } = useAuth();
   const [username, setUsername] = useState("");
-  const [tasks, setTasks] = useState([]); // source of truth: tasks list from server
+  const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all"); // filter state: all | pending | completed
 
   // Charger les dopnnées utilisateur + toutes les tâches au premier rendu
